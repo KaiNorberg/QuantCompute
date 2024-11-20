@@ -1,6 +1,8 @@
 #include "State.hpp"
 
 #include <stdexcept>
+#include <complex>
+#include <random>
 
 uint64_t Quant::State::QubitAmount()
 {
@@ -10,6 +12,21 @@ uint64_t Quant::State::QubitAmount()
 uint64_t Quant::State::VectorLength()
 {
     return this->vector.Length();
+}
+
+void Quant::State::Normalize() 
+{
+    double norm = 0.0;
+    for (uint64_t i = 0; i < this->vector.Length(); i++) 
+    {
+        norm += std::norm(this->vector[i]);
+    }
+    
+    norm = std::sqrt(norm);
+    for (uint64_t i = 0; i < this->vector.Length(); i++) 
+    {
+        this->vector[i] /= norm;
+    }
 }
 
 void Quant::State::Apply(const Circuit& circuit)
@@ -32,9 +49,36 @@ void Quant::State::Apply(const Circuit& circuit)
     this->vector = result;
 }
 
-void Quant::State::Measure(uint64_t targetQubit)
+uint64_t Quant::State::Measure(uint64_t qubit)
 {
-    
+    uint64_t mask = 1 << qubit;
+    double probZero = 0.0;
+
+    for (uint64_t i = 0; i < this->vector.Length(); ++i) 
+    {
+        if ((i & mask) == 0) 
+        {
+            probZero += std::norm(this->vector[i]);
+        }
+    }
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+    double randomValue = dis(gen);
+
+    bool result = randomValue > probZero;
+
+    for (uint64_t i = 0; i < this->vector.Length(); ++i) 
+    {
+        if (((i & mask) == 0) != result) 
+        {
+            this->vector[i] = {0.0, 0.0};
+        }
+    }
+    this->Normalize();
+
+    return result;
 }
 
 void Quant::State::Dump()

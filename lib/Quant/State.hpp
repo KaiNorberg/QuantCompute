@@ -14,8 +14,10 @@ namespace Quant
         uint64_t QubitAmount();
         uint64_t VectorLength();
 
+        void Normalize(); 
+
         void Apply(const Circuit& circuit);
-        void Measure(uint64_t targetQubit);
+        uint64_t Measure(uint64_t qubit);
 
         void Dump();
 

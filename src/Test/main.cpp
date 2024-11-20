@@ -1,5 +1,7 @@
 #include <Quant/Quant.hpp>
 
+#include <iostream>
+
 void DeutschAlgorithm()
 {
     Q::State state("01");
@@ -7,28 +9,36 @@ void DeutschAlgorithm()
 
     Q::Circuit circuit(2);
     circuit.Apply(Q::Gate::Hadamard);
-    circuit.Dump();
-
-    // Oracle matrix representing f(x) = 1
+    // Oracle matrix representing f(x) = 0
     circuit.Matrix({
-        {0, 1, 0, 0},
         {1, 0, 0, 0},
-        {0, 0, 0, 1},
-        {0, 0, 1, 0}
+        {0, 1, 0, 0},
+        {0, 0, 1, 0},
+        {0, 0, 0, 1}
     });
-
-    circuit.Apply(Q::Gate::Hadamard);
+    circuit.Apply(Q::Gate::Hadamard, 0);
 
     state.Apply(circuit);
     state.Dump();
 
-    //Q::Result result = state.Measure(0);
+    uint64_t result = state.Measure(0);
+    if (result == 0)
+    {
+        std::cout << "Function is constant\n";
+    }
+    else if (result == 1)
+    {
+        std::cout << "Function is balanced\n";
+    }
+    else 
+    {
+        std::cout << "Measurement does not make sense\n";
+    }
 }
 
 int main(char** argv, int argc)
 {
     DeutschAlgorithm();
-
 
     return 0;
 }
