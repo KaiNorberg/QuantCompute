@@ -2,28 +2,27 @@
 
 #include "Gate.hpp"
 #include "Complex.hpp"
+#include "Circuit.hpp"
 
 #include <vector>
 #include <stdint.h>
 
 namespace Quant
 {
-    typedef std::complex<double> Complex;
-
     class State
     {
     public:
         uint64_t QubitAmount();
         uint64_t VectorLength();
 
-        void Apply(const Gate& gate);
+        void Apply(const Circuit& circuit);
+        void Measure(uint64_t targetQubit);
 
-        // Takes in dirac notation for example |0>|1>.
-        State(const std::string& dirac);
+        void Dump();
+
+        State(const std::string& string);
     private:
         uint64_t qubitAmount;
-
-        // A 2^(qubitAmount) dimensional vector of complex numbers.
-        std::vector<Complex> vector; 
+        ComplexVector vector; 
     };
 }

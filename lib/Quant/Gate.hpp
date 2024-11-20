@@ -6,12 +6,6 @@
 
 namespace Quant
 {
-    class Gate
-    {
-    public:
+    typedef std::vector<std::vector<Complex>> Gate;
 
-    private:
-
-        std::vector<std::vector<Complex>> matrix;
-    };
 }
