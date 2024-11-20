@@ -50,6 +50,4 @@ namespace Quant
     private:
         std::vector<std::vector<Complex>> matrix;
     };
-
-    
 }
