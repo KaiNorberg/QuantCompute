@@ -6,8 +6,11 @@ void DeutschAlgorithm(bool isBalanced)
     state.Dump();
 
     Q::Circuit circuit(2);
+    circuit.Dump();
     circuit.Hadamard(0);
+    circuit.Dump();
     circuit.Hadamard(1);
+    circuit.Dump();
     //circuit.Oracle(isBalanced);
     //circuit.Hadamard(0);
 

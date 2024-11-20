@@ -1,7 +1,6 @@
 #include "State.hpp"
 
 #include <stdexcept>
-#include <iostream>
 
 uint64_t Quant::State::QubitAmount()
 {
@@ -15,7 +14,22 @@ uint64_t Quant::State::VectorLength()
 
 void Quant::State::Apply(const Circuit& circuit)
 {
+    if (circuit.matrix.Columns() != circuit.matrix.Rows()) 
+    {
+        throw std::invalid_argument("Matrix and vector dimensions do not match.");
+    }
+    uint64_t n = circuit.matrix.Columns();
 
+    ComplexVector result(n, Complex(0.0, 0.0));
+    for (int i = 0; i < n; ++i) 
+    {
+        for (int j = 0; j < n; ++j) 
+        {
+            result[i] += circuit.matrix[i][j] * this->vector[j];
+        }
+    }
+
+    this->vector = result;
 }
 
 void Quant::State::Measure(uint64_t targetQubit)
@@ -25,17 +39,7 @@ void Quant::State::Measure(uint64_t targetQubit)
 
 void Quant::State::Dump()
 {
-    std::cout << "[";
-    for (uint64_t i = 0; i < this->vector.Length(); i++)
-    {
-        std::cout << this->vector[i];
-        if (i != this->vector.Length() - 1)
-        {
-            std::cout << " ";
-        }
-    }
-
-    std::cout << "]\n";
+    this->vector.Dump();
 }
 
 Quant::State::State(const std::string& string)
