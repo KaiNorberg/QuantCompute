@@ -15,7 +15,7 @@ You will need to have xmake installed on your machine, if you do not have xmake 
 
 With xmake installed, run the ```xmake``` command. You can then use ```xmake run```.
 
-## How does it work?
+## How does it work? (WIP)
 
 Note that I currently lack a formal education in quantum physics, so please take everything with a grain of salt.
 
