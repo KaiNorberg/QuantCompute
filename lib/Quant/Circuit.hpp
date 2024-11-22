@@ -28,7 +28,7 @@ namespace Quant
 
         uint64_t rows() const { return this->m_matrix.rows(); }
         uint64_t columns() const { return this->m_matrix.columns(); }
-        const std::complex<double>& element(uint64_t i, uint64_t j) const { return this->m_matrix(i, j); }
+        const CircuitMatrix& matrix() const { return this->m_matrix; }
 
         void dump();
 

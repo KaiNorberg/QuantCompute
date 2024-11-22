@@ -11,6 +11,13 @@ namespace Quant
 {
     using StateVector = blaze::DynamicVector<std::complex<double>>;
 
+    struct Measurement
+    {
+        uint64_t qubit;
+        uint8_t result;
+        double probability;
+    };
+
     class State
     {
     public:
@@ -18,7 +25,7 @@ namespace Quant
 
         void normalize(); 
         void apply(const Circuit& circuit);
-        uint64_t measure(uint64_t qubit);
+        Measurement measure(uint64_t qubit);
 
         void dump();
 

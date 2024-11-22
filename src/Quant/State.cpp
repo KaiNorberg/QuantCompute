@@ -23,56 +23,43 @@ void Quant::State::apply(const Circuit& circuit)
         throw std::invalid_argument("Matrix and vector dimensions do not match.");
     }
 
-    StateVector result(n, std::complex<double>(0.0, 0.0));
-    for (int i = 0; i < n; ++i) 
-    {
-        for (int j = 0; j < n; ++j) 
-        {
-            result[i] += circuit.element(i, j) * this->m_vector[j];
-        }
-    }
-
-    this->m_vector = result;
+    this->m_vector *= circuit.matrix();
 }
 
-uint64_t Quant::State::measure(uint64_t qubit)
+Quant::Measurement Quant::State::measure(uint64_t qubit)
 {
-    uint64_t mask = 1 << qubit;
-    double probZero = 0.0;
+    std::vector<double> probabilities(1 << this->m_qubitAmount, 0.0);
 
     for (uint64_t i = 0; i < this->m_vector.size(); ++i) 
     {
-        if ((i & mask) == 0) 
-        {
-            probZero += std::norm(this->m_vector[i]);
-        }
+        int qubitValue = (i >> (this->m_qubitAmount - qubit - 1)) & 1;
+        probabilities[qubitValue] += std::norm(this->m_vector[i]);
     }
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dis(0.0, 1.0);
-    double randomValue = dis(gen);
-
-    bool result = randomValue > probZero;
-
-    for (uint64_t i = 0; i < this->m_vector.size(); ++i) 
+    uint8_t result = 0;
+    double maxProbability = probabilities[0];
+    for (uint64_t i = 1; i < probabilities.size(); ++i) 
     {
-        if (((i & mask) == 0) != result) 
+        if (probabilities[i] > maxProbability) 
         {
-            this->m_vector[i] = {0.0, 0.0};
+            result = i;
+            maxProbability = probabilities[i];
         }
     }
-    this->normalize();
 
-    return result;
+    return {qubit, result, maxProbability};
 }
 
 void Quant::State::dump()
 {
     std::cout << "[";
-    for (size_t i = 0; i < this->m_vector.size(); ++i) 
+    for (uint64_t i = 0; i < this->m_vector.size(); ++i) 
     {
-        std::cout << this->m_vector[i] << " ";
+        std::cout << this->m_vector[i];
+        if (i != this->m_vector.size() - 1)
+        {
+            std::cout << " ";
+        }
     }
     std::cout << "]" << std::endl;
 }

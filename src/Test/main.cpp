@@ -5,35 +5,30 @@
 void deutsch_algorithm()
 {
     Q::State state("01");
-    state.dump();
 
     Q::Circuit circuit(2);
     circuit.apply(Q::Gate::Hadamard);
-    // Oracle matrix representing f(x) = 0
+    // Oracle matrix representing f(x) = x
     circuit.apply({
         {1, 0, 0, 0},
         {0, 1, 0, 0},
-        {0, 0, 1, 0},
-        {0, 0, 0, 1}
+        {0, 0, 0, 1},
+        {0, 0, 1, 0}
     });
     circuit.apply(Q::Gate::Hadamard, 0);
 
     state.apply(circuit);
-    state.dump();
 
-    uint64_t result = state.measure(0);
-    if (result == 0)
+    Q::Measurement result = state.measure(0);
+    if (result.result == 0)
     {
-        std::cout << "Function is constant.\n";
+        std::cout << "Function is constant";
     }
-    else if (result == 1)
+    else if (result.result == 1)
     {
-        std::cout << "Function is balanced.\n";
+        std::cout << "Function is balanced";
     }
-    else 
-    {
-        std::cout << "Measurement does not make sense.\n";
-    }
+    std::cout << " with a " << result.probability * 100 << "% likelihood.\n";
 }
 
 int main(char** argv, int argc)

@@ -16,7 +16,7 @@ void Quant::Circuit::apply(Gate gate)
         result = blaze::kron(result, gateMatrix);
     }
 
-    this->m_matrix *= result;
+    this->m_matrix = result * this->m_matrix;
 }
 
 void Quant::Circuit::apply(Gate gate, uint64_t qubit)
@@ -36,7 +36,7 @@ void Quant::Circuit::apply(Gate gate, uint64_t qubit)
         }
     }
 
-    this->m_matrix *= result;
+    this->m_matrix = result * this->m_matrix;
 }
 
 void Quant::Circuit::apply(Gate gate, uint64_t begin, uint64_t end)
@@ -56,7 +56,7 @@ void Quant::Circuit::apply(Gate gate, uint64_t begin, uint64_t end)
         }
     }
 
-    this->m_matrix *= result;
+    this->m_matrix = result * this->m_matrix;
 }
 
 void Quant::Circuit::apply(Gate gate, const std::vector<uint64_t>& qubits)
@@ -76,12 +76,12 @@ void Quant::Circuit::apply(Gate gate, const std::vector<uint64_t>& qubits)
         }
     }
 
-    this->m_matrix *= result;
+    this->m_matrix = result * this->m_matrix;
 }
 
 void Quant::Circuit::apply(const CircuitMatrix& matrix)
 {
-    this->m_matrix *= matrix;
+    this->m_matrix = matrix * this->m_matrix;
 }
 
 void Quant::Circuit::dump()
@@ -91,11 +91,14 @@ void Quant::Circuit::dump()
         std::cout << "|";
         for (uint64_t j = 0; j < this->m_matrix.columns(); ++j) 
         {
-            std::cout << this->m_matrix(i, j) << " ";
+            std::cout << this->m_matrix(i, j);
+            if (j != this->m_matrix.columns() - 1)
+            {
+                std::cout << " ";
+            }
         }
         std::cout << "|\n";
     }
-    std::cout << std::endl;
 }
 
 Quant::Circuit::Circuit(uint64_t m_qubitAmount)
